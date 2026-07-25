@@ -12,7 +12,7 @@ if sys.version_info.major == 2:
 
 print('''
 **********************************************************
-**********功能:小车前进1米 -> 掉头180° -> 前进1米返回*********
+**********功能:小车前进5秒 -> 掉头180° -> 前进5秒返回*********
 **********************************************************
 ----------------------------------------------------------
 Official website:https://www.hiwonder.com
@@ -41,22 +41,19 @@ if __name__ == '__main__':
     # ============ 参数配置 ============
     FORWARD_SPEED = 50       # 前进速度, 单位: mm/s
     FORWARD_DIRECTION = 90   # 前进方向, 90度=前进
-    TARGET_DISTANCE = 1000   # 目标距离, 1米 = 1000mm
+    FORWARD_TIME = 5.0       # 前进时间, 单位:秒
     TURN_RATE = 0.3          # 旋转角速度, 正值=顺时针旋转
     TURN_TIME = 3.0          # 旋转180度所需时间, 单位:秒 (需根据实际校准)
 
-    forward_time = TARGET_DISTANCE / FORWARD_SPEED  # 前进1米所需时间
-
-    # ============ 第一步: 前进1米 ============
-    print('>>> 第一步: 小车前进1米 (速度:{}mm/s, 时间:{}秒)'.format(
-        FORWARD_SPEED, forward_time))
+    # ============ 第一步: 前进5秒 ============
+    print('>>> 第一步: 小车前进5秒 (速度:{}mm/s)'.format(FORWARD_SPEED))
     chassis.set_velocity(FORWARD_SPEED, FORWARD_DIRECTION, 0)
-    time.sleep(forward_time)
+    time.sleep(FORWARD_TIME)
 
     # 短暂停止
     chassis.set_velocity(0, 0, 0)
     time.sleep(0.5)
-    print('>>> 已到达1米处, 停止')
+    print('>>> 前进5秒完成, 停止')
 
     # ============ 第二步: 掉头180度 ============
     print('>>> 第二步: 掉头180度 (旋转中...)')
@@ -68,12 +65,11 @@ if __name__ == '__main__':
     time.sleep(0.5)
     print('>>> 掉头完成')
 
-    # ============ 第三步: 前进1米返回起点 ============
-    print('>>> 第三步: 返回起点 (速度:{}mm/s, 时间:{}秒)'.format(
-        FORWARD_SPEED, forward_time))
+    # ============ 第三步: 前进5秒返回 ============
+    print('>>> 第三步: 返回 (速度:{}mm/s, 前进5秒)'.format(FORWARD_SPEED))
     chassis.set_velocity(FORWARD_SPEED, FORWARD_DIRECTION, 0)
-    time.sleep(forward_time)
+    time.sleep(FORWARD_TIME)
 
     # ============ 结束 ============
     chassis.set_velocity(0, 0, 0)  # 关闭所有电机
-    print('>>> 已完成! 小车前进1米 -> 掉头 -> 返回1米')
+    print('>>> 已完成! 小车前进5秒 -> 掉头 -> 前进5秒返回')
