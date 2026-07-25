@@ -49,12 +49,18 @@ FORWARD_AFTER_AVOID = 2.0  # 避障后继续前进时间, 秒
 
 
 def get_filtered_distance(sonar, samples=5):
-    """读取超声波距离,取多次滤波均值"""
+    """读取超声波距离, 过滤掉无效值(0)后取均值"""
     distances = []
-    for _ in range(samples):
-        dist = sonar.getDistance() / 10.0  # mm -> cm
-        distances.append(dist)
-        time.sleep(0.01)
+    attempts = 0
+    max_attempts = samples * 3  # 最多尝试3倍次数, 防止死循环
+    while len(distances) < samples and attempts < max_attempts:
+        raw = sonar.getDistance()  # 返回 mm
+        attempts += 1
+        if raw > 0 and raw <= 5000:  # 过滤无效值: 0=无回波, >5000=超量程
+            distances.append(raw / 10.0)  # mm -> cm
+        time.sleep(0.02)
+    if not distances:
+        return 999.0  # 没有有效读数, 返回一个很大的值(认为没有障碍物)
     return float(np.mean(distances))
 
 
@@ -87,13 +93,15 @@ def wait_for_obstacle():
     while start:
         dist = get_filtered_distance(hwsonar)
         print('    距离: {:.1f} cm'.format(dist))
-        if dist <= THRESHOLD:
+        if 0 < dist <= THRESHOLD:  # 确保是有效距离(>0)才触发避障
             return True
         time.sleep(0.05)
     return False
 
 
 if __name__ == '__main__':
+    print('>>> 超声波传感器预热中...')
+    time.sleep(0.5)  # 传感器上电稳定
     print('>>> 开始任务: 慢速前进, 等待障碍物...')
 
     # ===== 第一段: 前进直到遇到障碍物 =====
