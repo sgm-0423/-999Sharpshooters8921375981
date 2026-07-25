@@ -1,0 +1,14 @@
+
+● 对，就是配成 STA 模式就行。步骤总结：
+
+  # 1. SSH/VNC 连上树莓派
+  cd ~/hiwonder-toolbox/
+  vim wifi_conf.py
+
+  # 2. 改这三行：
+  #    HW_WIFI_MODE = 3              ← 切成 STA 模式
+  #    HW_WIFI_STA_SSID = "你家WiFi名"
+  #    HW_WIFI_STA_PASSWORD = "WiFi密码"
+
+  # 3. 重启生效
+  sudo systemctl restart wifi.service
